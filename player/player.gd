@@ -2,16 +2,32 @@ class_name Player
 extends KinematicBody2D
 
 
+signal game_over
+
 const ACCEL := 0.5
 const FRICTION := 0.2
 
-export var speed := 125
+export var maxSpeed := 125
 export var idleRotationSpeed := 6.0
 
 var velocity := Vector2.ZERO
 var dir := Vector2.UP
 
+var maxWebLength := 25
+
+onready var speed := maxSpeed
+
 onready var webLine: Line2D = $WebHolder/Web
+onready var stunTimer: Timer = $StunTimer
+onready var animPlayer: AnimationPlayer = $AnimationPlayer
+
+
+func _enter_tree() -> void:
+	Global.player = self
+
+
+func _exit_tree() -> void:
+	Global.player = null
 
 
 func _ready() -> void:
@@ -22,13 +38,16 @@ func _physics_process(delta: float) -> void:
 	webLine.set_point_position(webLine.get_point_count() - 1, global_position)
 	if Input.is_action_just_pressed("button"):
 		webLine.add_point(global_position)
+		while webLine.get_point_count() > maxWebLength:
+			webLine.remove_point(0)
 
 
 	if Input.is_action_pressed("button"):
 		_accelerate_to_velocity(dir * speed)
-	else:
+	elif not _is_stunned():
 		velocity = Vector2.ZERO
-		rotation += delta * idleRotationSpeed
+		rotation += delta * (idleRotationSpeed + (Global.currentCamera.speed / 20))
+		print(delta * (idleRotationSpeed + (Global.currentCamera.speed / 20)))
 		dir = Vector2.RIGHT.rotated(rotation)
 
 
@@ -38,14 +57,29 @@ func _physics_process(delta: float) -> void:
 		_game_over()
 
 
-
 func _accelerate_to_velocity(newVelocity: Vector2) -> void:
 	velocity.x = lerp(velocity.x, newVelocity.x, ACCEL if newVelocity.x != 0 else FRICTION)
 	velocity.y = lerp(velocity.y, newVelocity.y, ACCEL if newVelocity.y != 0 else FRICTION)
 
 
+func stun() -> void:
+	speed = 0
+	velocity = Vector2.ZERO
+	stunTimer.start()
+	animPlayer.play("stunned")
+
+
+func _is_stunned() -> bool:
+	return !stunTimer.is_stopped()
+
+
+func _on_StunTimer_timeout() -> void:
+	speed = maxSpeed
+	animPlayer.play("RESET")
+
+
 func _game_over() -> void:
-	print("game over")
+	emit_signal("game_over")
 
 
 func _on_screen_exited() -> void:

@@ -1,7 +1,8 @@
-[gd_scene load_steps=41 format=2]
+[gd_scene load_steps=43 format=2]
 
 [ext_resource path="res://common/tileset.png" type="Texture" id=1]
 [ext_resource path="res://scenes/level parts/level_part.gd" type="Script" id=2]
+[ext_resource path="res://obstacles/flying enemy/flying_enemy.tscn" type="PackedScene" id=3]
 
 [sub_resource type="ConvexPolygonShape2D" id=2]
 points = PoolVector2Array( 8, 16, 0, 16, 0, 8, 8, 8 )
@@ -382,12 +383,17 @@ points = PoolVector2Array( 0, 0, 8, 0, 8, 8, 0, 8 )
 [sub_resource type="RectangleShape2D" id=42]
 extents = Vector2( 64, 64 )
 
+[sub_resource type="RectangleShape2D" id=43]
+extents = Vector2( 4.5, 70.5 )
+
 [node name="LevelPart04" type="Node2D"]
 script = ExtResource( 2 )
 
 [node name="TileMap" type="TileMap" parent="."]
 tile_set = SubResource( 39 )
 cell_size = Vector2( 8, 8 )
+collision_layer = 2
+collision_mask = 0
 format = 1
 tile_data = PoolIntArray( 327680, 0, 3, 327686, 0, 1, 393216, 536870912, 131076, 393217, 536870912, 131072, 393218, 1073741824, 65539, 393219, 536870912, 65537, 393220, 0, 131076, 393221, 0, 131074, 393222, 0, 131075, 458752, 0, 196609, 458753, 0, 327683, 458754, 1073741824, 327683, 458755, 0, 196609, 458756, 0, 196613, 458757, 1073741824, 327681, 458758, 1610612736, 131077, 524288, 0, 196612, 524289, 0, 196608, 524290, 0, 196611, 524291, 0, 262149, 524292, 536870912, 262144, 589824, 536870912, 262149, 589825, 0, 262147, 655360, 1610612736, 262146 )
 
@@ -412,3 +418,22 @@ collision_layer = 0
 modulate = Color( 1, 1, 1, 0 )
 position = Vector2( 64, 64 )
 shape = SubResource( 42 )
+
+[node name="FlyingEnemy" parent="." instance=ExtResource( 3 )]
+position = Vector2( 92, 52 )
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+position = Vector2( 64, 64 )
+collision_layer = 2
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2( -68.5, 0 )
+shape = SubResource( 43 )
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2( 69, -0.5 )
+shape = SubResource( 43 )
+
+[node name="VisibilityNotifier2D" type="VisibilityNotifier2D" parent="."]
+rect = Rect2( 0, 0, 128, 128 )

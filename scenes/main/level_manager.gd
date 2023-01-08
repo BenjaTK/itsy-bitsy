@@ -7,36 +7,33 @@ const PARTS_FOLDER_PATH = "res://scenes/level parts/"
 onready var partsScenesList: Array = _get_parts_scenes_list()
 
 var playerCurrentPart = null setget _set_player_current_part
+var lastPlacedPart = null
 
-var partsPlaced : Array
-var maxPartsAmount := 6
+var rng = RandomNumberGenerator.new()
 
 
 func _ready() -> void:
-	randomize()
-	for i in 2:
-		_place_random_part_on_front()
+	rng.randomize()
 
-
-func _delete_last_part() -> void:
-	var lastPart = partsPlaced.pop_front()
-	print(lastPart)
-	lastPart.queue_free()
-
-
-func _on_player_entered_part(newPart) -> void:
-	if partsPlaced.size() > maxPartsAmount:
-		_delete_last_part()
+	_place_part_on_front(load("res://scenes/level parts/level_part_01.tscn").instance())
 	_place_random_part_on_front()
 
 
 func _place_random_part_on_front() -> void:
-	partsScenesList.shuffle()
-	var newPart = load(PARTS_FOLDER_PATH + partsScenesList[0]).instance()
-	if !partsPlaced.empty():
-		newPart.position.y = partsPlaced.back().position.y - 128
+	var scenePath = partsScenesList[rng.randi_range(0, partsScenesList.size() -1)]
+	var randomPart = load(PARTS_FOLDER_PATH + scenePath).instance()
+	_place_part_on_front(randomPart)
 
-	partsPlaced.append(newPart)
+
+func _on_player_entered_part(newPart) -> void:
+	_place_random_part_on_front()
+
+
+func _place_part_on_front(newPart) -> void:
+	if lastPlacedPart != null:
+		newPart.position.y = lastPlacedPart.position.y - 128
+
+	lastPlacedPart = newPart
 	call_deferred("add_child", newPart)
 
 

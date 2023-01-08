@@ -1,11 +1,19 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://player/player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scenes/main/game_camera.gd" type="Script" id=2]
 [ext_resource path="res://scenes/main/level_manager.gd" type="Script" id=3]
+[ext_resource path="res://common/background.png" type="Texture" id=4]
+[ext_resource path="res://ui/ui_theme.tres" type="Theme" id=5]
+[ext_resource path="res://scenes/main/hud.gd" type="Script" id=6]
+[ext_resource path="res://ui/back-icon.png" type="Texture" id=7]
+[ext_resource path="res://ui/restart-icon.png" type="Texture" id=8]
+[ext_resource path="res://scenes/main/game_over_screen.gd" type="Script" id=9]
+[ext_resource path="res://scenes/main/main.gd" type="Script" id=10]
+[ext_resource path="res://ui/button.gd" type="Script" id=11]
 
-[sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 4.5, 70.5 )
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 67, 4 )
 
 [sub_resource type="Environment" id=2]
 background_mode = 4
@@ -14,28 +22,143 @@ glow_bloom = 0.07
 glow_blend_mode = 0
 
 [node name="Main" type="Node2D"]
+script = ExtResource( 10 )
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
 position = Vector2( 64, 110 )
 rotation = -1.5708
 
 [node name="GameCamera" type="Camera2D" parent="."]
-position = Vector2( 64, 100 )
+position = Vector2( 64, 81 )
 current = true
 script = ExtResource( 2 )
+minSpeed = 30.0
+maxSpeed = 70.0
+speedIncreaseRateMultiplier = 0.6
 
 [node name="StaticBody2D" type="StaticBody2D" parent="GameCamera"]
+collision_layer = 32768
+collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="GameCamera/StaticBody2D"]
-position = Vector2( -68.5, 0 )
-shape = SubResource( 1 )
-
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="GameCamera/StaticBody2D"]
-position = Vector2( 69, -0.5 )
-shape = SubResource( 1 )
+position = Vector2( 0, -69 )
+shape = SubResource( 3 )
 
 [node name="LevelManager" type="Node2D" parent="."]
 script = ExtResource( 3 )
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource( 2 )
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2( 1, 0.5 )
+motion_mirroring = Vector2( 0, 128 )
+
+[node name="TextureRect" type="TextureRect" parent="ParallaxBackground/ParallaxLayer"]
+margin_right = 40.0
+margin_bottom = 40.0
+texture = ExtResource( 4 )
+
+[node name="ParallaxLayer2" type="ParallaxLayer" parent="ParallaxBackground"]
+modulate = Color( 0.4, 0.4, 0.4, 1 )
+position = Vector2( 0, 36 )
+motion_scale = Vector2( 1, 0.25 )
+motion_mirroring = Vector2( 128, 128 )
+
+[node name="TextureRect" type="TextureRect" parent="ParallaxBackground/ParallaxLayer2"]
+margin_left = -64.0
+margin_top = 37.0
+margin_right = 64.0
+margin_bottom = 165.0
+texture = ExtResource( 4 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="HUD" type="Control" parent="CanvasLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 5 )
+script = ExtResource( 6 )
+
+[node name="DistanceLabel" type="Label" parent="CanvasLayer/HUD"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -20.0
+margin_right = 20.0
+margin_bottom = 14.0
+custom_colors/font_color = Color( 0.960784, 0.945098, 0.862745, 1 )
+text = "9999"
+align = 1
+valign = 1
+
+[node name="GameOverScreen" type="Control" parent="CanvasLayer"]
+pause_mode = 2
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 5 )
+script = ExtResource( 9 )
+hudPath = NodePath("../HUD")
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/GameOverScreen"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -64.0
+margin_top = -16.5
+margin_right = 64.0
+margin_bottom = 16.5
+color = Color( 0, 0, 0, 1 )
+
+[node name="FinalDistanceLabel" type="Label" parent="CanvasLayer/GameOverScreen"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -20.0
+margin_top = -13.0
+margin_right = 20.0
+margin_bottom = 1.0
+custom_colors/font_color = Color( 0.960784, 0.945098, 0.862745, 1 )
+text = "9999"
+align = 1
+valign = 1
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="CanvasLayer/GameOverScreen"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -10.0
+margin_top = 3.0
+margin_right = 10.0
+margin_bottom = 11.0
+alignment = 1
+
+[node name="MainMenuButton" type="Button" parent="CanvasLayer/GameOverScreen/ButtonsContainer"]
+unique_name_in_owner = true
+modulate = Color( 0.960784, 0.945098, 0.862745, 1 )
+margin_right = 8.0
+margin_bottom = 8.0
+icon = ExtResource( 7 )
+flat = true
+icon_align = 1
+script = ExtResource( 11 )
+
+[node name="RestartButton" type="Button" parent="CanvasLayer/GameOverScreen/ButtonsContainer"]
+unique_name_in_owner = true
+modulate = Color( 0.960784, 0.945098, 0.862745, 1 )
+margin_left = 6.0
+margin_right = 14.0
+margin_bottom = 8.0
+icon = ExtResource( 8 )
+flat = true
+icon_align = 1
+script = ExtResource( 11 )
+
+[connection signal="game_over" from="Player" to="." method="_on_Player_game_over"]
+[connection signal="game_over" from="Player" to="CanvasLayer/GameOverScreen" method="_on_Player_game_over"]
+[connection signal="pressed" from="CanvasLayer/GameOverScreen/ButtonsContainer/RestartButton" to="CanvasLayer/GameOverScreen" method="_on_RestartButton_pressed"]

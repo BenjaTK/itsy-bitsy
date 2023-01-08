@@ -1,6 +1,7 @@
 extends Node
 
 
+var player: Player
 var currentCamera: Camera2D
 
 
