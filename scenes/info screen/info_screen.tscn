@@ -1,0 +1,49 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://scenes/info screen/info_screen.gd" type="Script" id=1]
+[ext_resource path="res://ui/ui_theme.tres" type="Theme" id=2]
+[ext_resource path="res://ui/back-icon.png" type="Texture" id=3]
+[ext_resource path="res://ui/button.gd" type="Script" id=4]
+
+[sub_resource type="Environment" id=1]
+background_mode = 4
+glow_enabled = true
+glow_bloom = 0.02
+glow_blend_mode = 0
+
+[node name="InfoScreen" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( -146, -44 )
+theme = ExtResource( 2 )
+script = ExtResource( 1 )
+
+[node name="Credits" type="Label" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 5.0
+margin_top = -112.0
+margin_right = -5.0
+margin_bottom = -5.0
+custom_colors/font_color = Color( 0.960784, 0.945098, 0.862745, 1 )
+text = "Font: Dogica Pixel by Roberto Mocci/ OFL
+
+Music: Anticipation by yd on opengameart.org"
+autowrap = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 1 )
+
+[node name="MainMenuButton" type="Button" parent="."]
+modulate = Color( 0.960784, 0.945098, 0.862745, 1 )
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 8.0
+margin_bottom = 8.0
+icon = ExtResource( 3 )
+flat = true
+icon_align = 1
+script = ExtResource( 4 )
+
+[connection signal="pressed" from="MainMenuButton" to="." method="_on_MainMenuButton_pressed"]

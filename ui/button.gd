@@ -6,7 +6,6 @@ export var hoverColor := Color("f5f1dc")
 export var focusColor := Color("f5f1dc")
 export var pressedColor := Color("f5edba")
 
-
 func _ready() -> void:
 	modulate = normalColor
 

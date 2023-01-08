@@ -21,3 +21,9 @@ func get_files_in_folder(folderPath: String, fileExtension := "") -> Array:
 	dir.list_dir_end()
 
 	return files
+
+
+func frame_freeze(timeScale: float, duration: float) -> void:
+	Engine.time_scale = timeScale
+	yield(get_tree().create_timer(duration * timeScale), "timeout")
+	Engine.time_scale = 1.0
